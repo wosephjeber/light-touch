@@ -21,8 +21,8 @@ var LightTouch = function(elem, callback) {
   elem.bind('touchstart mousedown', function(e) {
     _this.touchDown = true;
     _this.eventInfo.eventType = 'start';
-    _this.eventInfo.startX = e.clientX;
-    _this.eventInfo.startY = e.clientY;
+    _this.eventInfo.startX = e.originalEvent.touches ? e.originalEvent.touches[0].clientX : e.clientX;
+    _this.eventInfo.startY = e.originalEvent.touches ? e.originalEvent.touches[0].clientY: e.clientY;
     _this.eventInfo.startTime = e.timeStamp;
     _this.handleTouch();
   });
@@ -30,8 +30,8 @@ var LightTouch = function(elem, callback) {
   elem.bind('touchmove mousemove', function(e) {
     if (_this.touchDown) {
       _this.eventInfo.eventType = 'move';
-      _this.eventInfo.deltaX = e.clientX - _this.eventInfo.startX;
-      _this.eventInfo.deltaY = e.clientY - _this.eventInfo.startY;
+      _this.eventInfo.deltaX = (e.originalEvent.touches ? e.originalEvent.touches[0].clientX: e.clientX) - _this.eventInfo.startX;
+      _this.eventInfo.deltaY = (e.originalEvent.touches ? e.originalEvent.touches[0].clientY : e.clientY) - _this.eventInfo.startY;
       _this.eventInfo.duration = e.timeStamp - _this.eventInfo.startTime;
       _this.handleTouch();
     }
