@@ -35,9 +35,9 @@ var LightTouch = function(elem, callback) {
   elem.bind('touchmove mousemove', function(e) {
     if (_this.touchDown) {
       _this.event.type = 'move';
-      _this.event.deltaX = (e.originalEvent.touches ? e.originalEvent.touches[0].clientX: e.clientX) - _this.eventInfo.startX;
-      _this.event.deltaY = (e.originalEvent.touches ? e.originalEvent.touches[0].clientY : e.clientY) - _this.eventInfo.startY;
-      _this.event.duration = e.timeStamp - _this.eventInfo.startTime;
+      _this.event.deltaX = (e.originalEvent.touches ? e.originalEvent.touches[0].clientX: e.clientX) - _this.event.startX;
+      _this.event.deltaY = (e.originalEvent.touches ? e.originalEvent.touches[0].clientY : e.clientY) - _this.event.startY;
+      _this.event.duration = e.timeStamp - _this.event.startTime;
       _this.handleTouch();
     }
   });
