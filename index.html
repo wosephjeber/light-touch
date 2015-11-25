@@ -41,19 +41,31 @@
       </ul>
     </div>
     
-    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script> -->
     <script src="js/lightTouch.js"></script>
     
     <script type="text/javascript">
-      touch = new LightTouch($('.touch-me'), function(e) {
-        $('.velocity-x').html(e.velocityX);
-        $('.velocity-y').html(e.velocityY);
-        $('.delta-x').html(e.deltaX);
-        $('.delta-y').html(e.deltaY);
-        $('.duration').html(e.duration);
-        $('.stage').html(e.stage);
-        $('.type').html(e.type);
-      })
+      // touch = new LightTouch($('.touch-me'), function(e) {
+      //   $('.velocity-x').html(e.velocityX);
+      //   $('.velocity-y').html(e.velocityY);
+      //   $('.delta-x').html(e.deltaX);
+      //   $('.delta-y').html(e.deltaY);
+      //   $('.duration').html(e.duration);
+      //   $('.stage').html(e.stage);
+      //   $('.type').html(e.type);
+      // })
+      
+      touch = new LightTouch(document.querySelector('.touch-me'));
+      
+      touch.on('pan', function(e) {
+        document.querySelector('.velocity-x').innerHTML = e.velocityX;
+        document.querySelector('.velocity-y').innerHTML = e.velocityY;
+        document.querySelector('.delta-x').innerHTML = e.deltaX;
+        document.querySelector('.delta-y').innerHTML = e.deltaY;
+        document.querySelector('.duration').innerHTML = e.duration;
+        document.querySelector('.stage').innerHTML = e.stage;
+        document.querySelector('.type').innerHTML = e.type;
+      });
     </script>
   </body>
 </html>

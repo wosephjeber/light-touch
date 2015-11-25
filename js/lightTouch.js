@@ -43,22 +43,53 @@ var LightTouch = function(elem, callback) {
   
   this.elem = jQuery && elem instanceof jQuery ? elem[0] : elem;
   this.callback = typeof callback === 'function' ? callback : noop;
-  this.event = null;
+  
+  this.callbacks = {
+    pan: [],
+    pinch_zoom: []
+  };
+  
+  this.touches = [];
+  
+  this.on = function(evt, callback) {
+    if (_this.callbacks[evt] && typeof callback === 'function') _this.callbacks[evt].push(callback);
+  };
   
   this.handleTouch = function() {
-    _this.callback.call(_this, _this.event);
+    if (_this.touches.length === 1) {
+      for (i = 0; i < _this.callbacks.pan.length; i++) {
+        _this.callbacks.pan[i].call(_this, _this.touches[0]);
+      }
+    } else if (_this.touches.length === 2) {
+      for (i = 0; i < _this.callbacks.pinch_zoom.length; i++) {
+        _this.callbacks.pinch_zoom[i].call(_this, _this.touches);
+      }
+    }
   };
   
   function startHandler(e) {
     var evt = e.originalEvent || e;
     
-    _this.event = new Touch();
-    _this.event.stage = 'start';
-    _this.event.type = evt.type;
-    _this.event.startX = evt.touches ? evt.touches[0].clientX : evt.clientX;
-    _this.event.startY = evt.touches ? evt.touches[0].clientY: evt.clientY;
-    _this.event.startTime = evt.timeStamp;
-    _this.event.calculateVelocity(evt.timeStamp);
+    if (evt.touches) {
+      for (i = 0; i < evt.touches.length; i++) {
+        _this.touches.push(new Touch());
+        _this.touches[i].stage = 'start';
+        _this.touches[i].type = evt.type;
+        _this.touches[i].startX = evt.touches[i].clientX;
+        _this.touches[i].startY = evt.touches[i].clientX;
+        _this.touches[i].startTime = evt.timeStamp;
+        _this.touches[i].calculateVelocity(evt.timeStamp);
+      }
+    } else {
+      _this.touches.push(new Touch());
+      _this.touches[0].stage = 'start';
+      _this.touches[0].type = evt.type;
+      _this.touches[0].startX = evt.clientX;
+      _this.touches[0].startY = evt.clientY;
+      _this.touches[0].startTime = evt.timeStamp;
+      _this.touches[0].calculateVelocity(evt.timeStamp);
+    }
+    
     _this.handleTouch();
     
     bind(_this.elem, 'touchmove mousemove', moveHandler);
@@ -69,23 +100,43 @@ var LightTouch = function(elem, callback) {
     
     var evt = e.originalEvent || e;
     
-    _this.event.stage = 'move';
-    _this.event.type = evt.type;
-    _this.event.deltaX = (evt.touches ? evt.touches[0].clientX: evt.clientX) - _this.event.startX;
-    _this.event.deltaY = (evt.touches ? evt.touches[0].clientY : evt.clientY) - _this.event.startY;
-    _this.event.duration = evt.timeStamp - _this.event.startTime;
-    _this.event.calculateVelocity(evt.timeStamp);
+    if (evt.touches) {
+      for (i = 0; i < evt.touches.length; i++) {
+        _this.touches[i].stage = 'move';
+        _this.touches[i].type = evt.type;
+        _this.touches[i].deltaX = evt.touches[i].clientX - _this.touches[i].startX;
+        _this.touches[i].deltaY = evt.touches[i].clientY - _this.touches[i].startY;
+        _this.touches[i].duration = evt.timeStamp - _this.touches[i].startTime;
+        _this.touches[i].calculateVelocity(evt.timeStamp);
+      }
+    } else {
+      _this.touches[0].stage = 'move';
+      _this.touches[0].type = evt.type;
+      _this.touches[0].deltaX = evt.clientX - _this.touches[0].startX;
+      _this.touches[0].deltaY = evt.clientY - _this.touches[0].startY;
+      _this.touches[0].duration = evt.timeStamp - _this.touches[0].startTime;
+      _this.touches[0].calculateVelocity(evt.timeStamp);
+    }
+    
     _this.handleTouch();
   }
   
   function endHandler(e) {
     var evt = e.originalEvent || e;
     
-    _this.event.stage = 'end';
-    _this.event.type = evt.type;
+    if (evt.touches) {
+      for (i = 0; i < evt.touches.length; i++) {
+        _this.touches[i].stage = 'end';
+        _this.touches[i].type = evt.type;
+      }
+    } else {
+      _this.touches[0].stage = 'end';
+      _this.touches[0].type = evt.type;
+    }
+    
     _this.handleTouch();
     
-    _this.event = null;
+    _this.touches = [];
     
     unbind(_this.elem, 'touchmove mousemove', moveHandler);
   }
