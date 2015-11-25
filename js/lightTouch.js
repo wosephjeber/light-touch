@@ -2,7 +2,7 @@ var LightTouch = function(elem, callback) {
   var _this = this;
   var noop = function() {};
   
-  var jQuery = jQuery || null;
+  var jQuery = window.jQuery || null;
   
   var Event = function() {
     var _this = this;
@@ -32,7 +32,7 @@ var LightTouch = function(elem, callback) {
     };
   };
   
-  this.elem = elem;
+  this.elem = jQuery && elem instanceof jQuery ? elem[0] : elem;
   this.callback = typeof callback === 'function' ? callback : noop;
   this.event = null;
   
@@ -97,7 +97,7 @@ var LightTouch = function(elem, callback) {
   
   function unbind(element, evt, handler) {
     if (jQuery) {
-      jQuery(element).unbind(evt);
+      jQuery(element).unbind(evt, handler);
     } else {
       var events = evt.split(' ');
       for (i = 0; events.length > i; i++) {
