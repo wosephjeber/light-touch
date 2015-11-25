@@ -32,7 +32,6 @@ var LightTouch = function(elem, callback) {
   
   this.elem = $(elem);
   this.callback = typeof callback === 'function' ? callback : noop;
-  this.touchDown = false;
   this.event = null;
   
   this.handleTouch = function() {
@@ -40,9 +39,7 @@ var LightTouch = function(elem, callback) {
   };
   
   this.elem.bind('touchstart mousedown', function(e) {
-    console.log(e);
     _this.event = new Event();
-    _this.touchDown = true;
     _this.event.stage = 'start';
     _this.event.type = e.type;
     _this.event.startX = e.originalEvent.touches ? e.originalEvent.touches[0].clientX : e.clientX;
@@ -55,7 +52,6 @@ var LightTouch = function(elem, callback) {
   });
   
   this.elem.bind('touchend mouseup', function(e) {
-    _this.touchDown = false;
     _this.event.stage = 'end';
     _this.event.type = e.type;
     _this.handleTouch();
