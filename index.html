@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
     <title>Light Touch demo</title>
     
     <style>
@@ -35,6 +36,8 @@
         <li>Delta X: <span class="delta-x">0</span>px</li>
         <li>Delta Y: <span class="delta-y">0</span>px</li>
         <li>Duration: <span class="duration">0</span>ms</li>
+        <li>Stage: <span class="stage"></span></li>
+        <li>Type: <span class="type"></span></li>
       </ul>
     </div>
     
@@ -48,6 +51,8 @@
         $('.delta-x').html(e.deltaX);
         $('.delta-y').html(e.deltaY);
         $('.duration').html(e.duration);
+        $('.stage').html(e.stage);
+        $('.type').html(e.type);
       })
     </script>
   </body>
