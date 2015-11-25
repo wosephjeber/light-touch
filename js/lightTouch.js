@@ -3,6 +3,12 @@ var LightTouch = function(elem, callback) {
   var noop = function() {};
   
   var Event = function() {
+    var _this = this;
+    
+    var prevDeltaX = 0;
+    var prevDeltaY = 0;
+    var prevTimestamp = 0;
+    
     this.type = null;
     this.startX = null;
     this.startY = null;
@@ -10,6 +16,18 @@ var LightTouch = function(elem, callback) {
     this.deltaX = 0;
     this.deltaY = 0;
     this.duration = 0;
+    this.velocityX = 0;
+    this.velocityY = 0;
+    
+    this.calculateVelocity = function(timestamp) {
+      var deltaTime = timestamp - prevTimestamp;
+      _this.velocityX = (_this.deltaX - prevDeltaX) / deltaTime;
+      _this.velocityY = (_this.deltaY - prevDeltaY) / deltaTime;
+      
+      prevTimestamp = timestamp;
+      prevDeltaX = _this.deltaX;
+      prevDeltaY = _this.deltaY;
+    };
   };
   
   this.elem = $(elem);
@@ -22,13 +40,13 @@ var LightTouch = function(elem, callback) {
   };
   
   elem.bind('touchstart mousedown', function(e) {
-    console.log(e);
     _this.event = new Event();
     _this.touchDown = true;
     _this.event.type = 'start';
     _this.event.startX = e.originalEvent.touches ? e.originalEvent.touches[0].clientX : e.clientX;
     _this.event.startY = e.originalEvent.touches ? e.originalEvent.touches[0].clientY: e.clientY;
     _this.event.startTime = e.timeStamp;
+    _this.event.calculateVelocity(e.timeStamp);
     _this.handleTouch();
   });
   
@@ -38,6 +56,7 @@ var LightTouch = function(elem, callback) {
       _this.event.deltaX = (e.originalEvent.touches ? e.originalEvent.touches[0].clientX: e.clientX) - _this.event.startX;
       _this.event.deltaY = (e.originalEvent.touches ? e.originalEvent.touches[0].clientY : e.clientY) - _this.event.startY;
       _this.event.duration = e.timeStamp - _this.event.startTime;
+      _this.event.calculateVelocity(e.timeStamp);
       _this.handleTouch();
     }
   });
