@@ -39,33 +39,48 @@ var LightTouch = function(elem, callback) {
     _this.callback.call(_this, _this.event);
   };
   
-  elem.bind('touchstart mousedown', function(e) {
+  this.elem.bind('touchstart mousedown', function(e) {
+    console.log(e);
     _this.event = new Event();
     _this.touchDown = true;
-    _this.event.type = 'start';
+    _this.event.stage = 'start';
+    _this.event.type = e.type;
     _this.event.startX = e.originalEvent.touches ? e.originalEvent.touches[0].clientX : e.clientX;
     _this.event.startY = e.originalEvent.touches ? e.originalEvent.touches[0].clientY: e.clientY;
     _this.event.startTime = e.timeStamp;
     _this.event.calculateVelocity(e.timeStamp);
     _this.handleTouch();
+    
+    bindMove();
   });
   
-  elem.bind('touchmove mousemove', function(e) {
-    if (_this.touchDown) {
-      _this.event.type = 'move';
+  this.elem.bind('touchend mouseup', function(e) {
+    console.log(e);
+    _this.touchDown = false;
+    _this.event.stage = 'end';
+    _this.event.type = e.type;
+    _this.handleTouch();
+    
+    _this.event = null;
+    
+    unbindMove();
+  });
+  
+  function bindMove() {
+    _this.elem.bind('touchmove mousemove', function(e) {
+      console.log(e);
+      
+      _this.event.stage = 'move';
+      _this.event.type = e.type;
       _this.event.deltaX = (e.originalEvent.touches ? e.originalEvent.touches[0].clientX: e.clientX) - _this.event.startX;
       _this.event.deltaY = (e.originalEvent.touches ? e.originalEvent.touches[0].clientY : e.clientY) - _this.event.startY;
       _this.event.duration = e.timeStamp - _this.event.startTime;
       _this.event.calculateVelocity(e.timeStamp);
       _this.handleTouch();
-    }
-  });
+    });
+  }
   
-  elem.bind('touchend mouseup', function(e) {
-    _this.touchDown = false;
-    _this.event.type = 'end';
-    _this.handleTouch();
-    
-    _this.event = null;
-  });
+  function unbindMove() {
+    _this.elem.unbind('touchmove mousemove');
+  }
 };
