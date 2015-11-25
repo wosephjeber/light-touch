@@ -55,7 +55,6 @@ var LightTouch = function(elem, callback) {
   });
   
   this.elem.bind('touchend mouseup', function(e) {
-    console.log(e);
     _this.touchDown = false;
     _this.event.stage = 'end';
     _this.event.type = e.type;
@@ -68,7 +67,7 @@ var LightTouch = function(elem, callback) {
   
   function bindMove() {
     _this.elem.bind('touchmove mousemove', function(e) {
-      console.log(e);
+      e.preventDefault();
       
       _this.event.stage = 'move';
       _this.event.type = e.type;
