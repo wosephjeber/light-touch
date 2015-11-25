@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Light Touch demo</title>
+    
+    <style>
+      * {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+      }
+      
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      
+      .touch-me {
+        background-color: #efeeea;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    
+    <div class="touch-me">
+      
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="js/lightTouch.js"></script>
+    
+    <script type="text/javascript">
+      touch = new LightTouch($('.touch-me'), function(e) {
+        //console.log(e);
+      })
+    </script>
+  </body>
+</html>
