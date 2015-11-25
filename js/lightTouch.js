@@ -52,7 +52,7 @@ var LightTouch = function(elem, callback) {
     _this.event.calculateVelocity(evt.timeStamp);
     _this.handleTouch();
     
-    bindMove();
+    bind(_this.elem, 'touchmove mousemove', moveListener);
   }
   
   function moveListener(e) {
@@ -70,7 +70,6 @@ var LightTouch = function(elem, callback) {
   }
   
   function endListener(e) {
-    
     var evt = e.originalEvent || e;
     
     _this.event.stage = 'end';
@@ -79,7 +78,7 @@ var LightTouch = function(elem, callback) {
     
     _this.event = null;
     
-    unbindMove();
+    unbind(_this.elem, 'touchmove mousemove', moveListener);
   }
   
   bind(this.elem, 'touchstart mousedown', startListener);
@@ -105,13 +104,5 @@ var LightTouch = function(elem, callback) {
         element.removeEventListener(events[i], handler, false);
       }
     }
-  }
-  
-  function bindMove() {
-    bind(_this.elem, 'touchmove mousemove', moveListener);
-  }
-  
-  function unbindMove() {
-    unbind(_this.elem, 'touchmove mousemove', moveListener);
   }
 };
