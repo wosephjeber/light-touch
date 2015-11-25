@@ -29,7 +29,13 @@
   <body>
     
     <div class="touch-me">
-      
+      <ul>
+        <li>Velocity X: <span class="velocity-x">0</span>px/ms</li>
+        <li>Velocity Y: <span class="velocity-y">0</span>px/ms</li>
+        <li>Delta X: <span class="delta-x">0</span>px</li>
+        <li>Delta Y: <span class="delta-y">0</span>px</li>
+        <li>Duration: <span class="duration">0</span>ms</li>
+      </ul>
     </div>
     
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -37,7 +43,11 @@
     
     <script type="text/javascript">
       touch = new LightTouch($('.touch-me'), function(e) {
-        //console.log(e);
+        $('.velocity-x').html(e.velocityX);
+        $('.velocity-y').html(e.velocityY);
+        $('.delta-x').html(e.deltaX);
+        $('.delta-y').html(e.deltaY);
+        $('.duration').html(e.duration);
       })
     </script>
   </body>
