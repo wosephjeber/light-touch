@@ -4,7 +4,7 @@ var LightTouch = function(elem, callback) {
   
   var jQuery = window.jQuery || null;
   
-  var Event = function() {
+  var Touch = function() {
     var _this = this;
     
     var prevDeltaX = 0;
@@ -43,7 +43,7 @@ var LightTouch = function(elem, callback) {
   function startListener(e) {
     var evt = e.originalEvent || e;
     
-    _this.event = new Event();
+    _this.event = new Touch();
     _this.event.stage = 'start';
     _this.event.type = evt.type;
     _this.event.startX = evt.touches ? evt.touches[0].clientX : evt.clientX;
