@@ -51,6 +51,7 @@ var LightTouch = function(elem, callback) {
   };
   
   this.touches = [];
+  this.multitouch = {};
   
   this.on = function(evt, callback) {
     if (_this.callbacks[evt] && typeof callback === 'function') _this.callbacks[evt].push(callback);
@@ -72,9 +73,11 @@ var LightTouch = function(elem, callback) {
       for (i = 0; i < _this.callbacks.pan.length; i++) {
         _this.callbacks.pan[i].call(_this, _this.touches[0]);
       }
-    } else if (_this.touches.length === 2) {
+    } 
+    
+    if (_this.touches.length === 2) {
       for (i = 0; i < _this.callbacks.pinch_zoom.length; i++) {
-        _this.callbacks.pinch_zoom[i].call(_this, _this.touches);
+        _this.callbacks.pinch_zoom[i].call(_this, _this.multitouch, _this.touches);
       }
     }
   };
@@ -92,6 +95,11 @@ var LightTouch = function(elem, callback) {
         _this.touches[i].startY = evt.touches[i].clientY;
         _this.touches[i].startTime = evt.timeStamp;
         _this.touches[i].calculateVelocity(evt.timeStamp);
+      }
+      
+      if (evt.touches.length > 1) {
+        _this.multitouch.scale = evt.scale;
+        _this.multitouch.rotation = evt.rotation;
       }
     } else {
       _this.touches.push(new Touch());
@@ -121,6 +129,11 @@ var LightTouch = function(elem, callback) {
         _this.touches[i].deltaY = evt.touches[i].clientY - _this.touches[i].startY;
         _this.touches[i].duration = evt.timeStamp - _this.touches[i].startTime;
         _this.touches[i].calculateVelocity(evt.timeStamp);
+      }
+      
+      if (evt.touches.length > 1) {
+        _this.multitouch.scale = evt.scale;
+        _this.multitouch.rotation = evt.rotation;
       }
     } else {
       _this.touches[0].stage = 'move';
