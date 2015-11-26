@@ -87,7 +87,7 @@ var LightTouch = function(elem, callback) {
         _this.touches[i].stage = 'start';
         _this.touches[i].type = evt.type;
         _this.touches[i].startX = evt.touches[i].clientX;
-        _this.touches[i].startY = evt.touches[i].clientX;
+        _this.touches[i].startY = evt.touches[i].clientY;
         _this.touches[i].startTime = evt.timeStamp;
         _this.touches[i].calculateVelocity(evt.timeStamp);
       }
