@@ -18,6 +18,7 @@ var LightTouch = function(elem, callback) {
     var prevTimestamp = 0;
     
     // public properties
+    this.id = 1;
     this.type = null;
     this.startX = null;
     this.startY = null;
@@ -84,6 +85,7 @@ var LightTouch = function(elem, callback) {
     if (evt.touches) {
       for (i = 0; i < evt.touches.length; i++) {
         _this.touches.push(new Touch());
+        _this.touches[i].id = evt.touches[i].identifier;
         _this.touches[i].stage = 'start';
         _this.touches[i].type = evt.type;
         _this.touches[i].startX = evt.touches[i].clientX;
