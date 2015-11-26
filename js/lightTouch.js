@@ -55,6 +55,17 @@ var LightTouch = function(elem, callback) {
     if (_this.callbacks[evt] && typeof callback === 'function') _this.callbacks[evt].push(callback);
   };
   
+  this.off = function(evt, callback) {
+    if (_this.callbacks[evt]) {
+      if (callback) {
+        var index = _this.callbacks[evt].indexOf(callback);
+        if (index !== -1) _this.callbacks[evt].splice(index, 1);
+      } else {
+        _this.callbacks[evt] = [];
+      }
+    }
+  };
+  
   this.handleTouch = function() {
     if (_this.touches.length === 1) {
       for (i = 0; i < _this.callbacks.pan.length; i++) {
