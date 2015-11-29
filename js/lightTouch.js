@@ -113,7 +113,7 @@ var LightTouch = function(elem, callback) {
     
     _this.handleTouch();
     
-    bind(_this.elem, 'touchmove mousemove', moveHandler);
+    bind(window, 'touchmove mousemove', moveHandler);
   }
   
   function moveHandler(e) {
@@ -164,7 +164,7 @@ var LightTouch = function(elem, callback) {
     
     _this.touches = [];
     
-    unbind(_this.elem, 'touchmove mousemove', moveHandler);
+    unbind(window, 'touchmove mousemove', moveHandler);
   }
   
   bind(this.elem, 'touchstart mousedown', startHandler);
