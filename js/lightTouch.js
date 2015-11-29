@@ -70,13 +70,13 @@ var LightTouch = function(elem, callback) {
   
   this.handleTouch = function() {
     if (_this.touches.length === 1) {
-      for (i = 0; i < _this.callbacks.pan.length; i++) {
+      for (i = 0, length = _this.callbacks.pan.length; i < length; i++) {
         _this.callbacks.pan[i].call(_this, _this.touches[0]);
       }
     } 
     
     if (_this.touches.length === 2) {
-      for (i = 0; i < _this.callbacks.pinch_zoom.length; i++) {
+      for (i = 0, length = _this.callbacks.pinch_zoom.length; i < length; i++) {
         _this.callbacks.pinch_zoom[i].call(_this, _this.multitouch, _this.touches);
       }
     }
@@ -86,7 +86,7 @@ var LightTouch = function(elem, callback) {
     var evt = e.originalEvent || e;
     
     if (evt.touches) {
-      for (i = 0; i < evt.touches.length; i++) {
+      for (i = 0, length = evt.touches.length; i < length; i++) {
         _this.touches.push(new Touch());
         _this.touches[i].id = evt.touches[i].identifier;
         _this.touches[i].stage = 'start';
@@ -122,7 +122,7 @@ var LightTouch = function(elem, callback) {
     var evt = e.originalEvent || e;
     
     if (evt.touches) {
-      for (i = 0; i < evt.touches.length; i++) {
+      for (i = 0, length = evt.touches.length; i < length; i++) {
         _this.touches[i].stage = 'move';
         _this.touches[i].type = evt.type;
         _this.touches[i].deltaX = evt.touches[i].clientX - _this.touches[i].startX;
@@ -156,7 +156,7 @@ var LightTouch = function(elem, callback) {
     }
     
     if (evt.touches) {
-      for (i = 0; i < evt.touches.length; i++) {
+      for (i = 0, length = evt.changedTouches.length; i < length; i++) {
         _this.touches[i].stage = 'end';
         _this.touches[i].type = evt.type;
       }
