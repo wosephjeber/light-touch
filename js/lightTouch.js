@@ -149,6 +149,11 @@ var LightTouch = function(elem, callback) {
   
   function endHandler(e) {
     var evt = e.originalEvent || e;
+    // If no touches have been registered, don't do anything. This would be the
+    // case if the touch event started outside of the Touch element.
+    if (_this.touches.length === 0) {
+      return;
+    }
     
     if (evt.touches) {
       for (i = 0; i < evt.touches.length; i++) {
