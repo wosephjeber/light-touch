@@ -87,6 +87,9 @@ var LightTouch = function(elem, callback) {
       for (i = 0, length = _this.callbacks.pinch_zoom.length; i < length; i++) {
         _this.callbacks.pinch_zoom[i].call(_this, _this.multitouch, _this.touches.slice(0,2));
       }
+      for (i = 0, length = _this.callbacks.rotate.length; i < length; i++) {
+        _this.callbacks.rotate[i].call(_this, _this.multitouch, _this.touches.slice(0,2));
+      }
     }
   };
   
