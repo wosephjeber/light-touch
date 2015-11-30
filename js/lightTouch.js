@@ -148,7 +148,7 @@ var LightTouch = function(elem, callback) {
     
     if (evt.touches) {
       for (i = 0, length = evt.changedTouches.length; i < length; i++) {
-        t = lookup[evt.touches[i].identifier];
+        t = lookup[evt.changedTouches[i].identifier];
         t.stage = 'move';
         t.type = evt.type;
         t.deltaX = evt.changedTouches[i].clientX - t.startX;
