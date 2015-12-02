@@ -55,7 +55,10 @@ var LightTouch = function(elem, callback) {
   };
   
   this.touches = [];
-  this.multitouch = {};
+  this.multitouch = {
+    scale: 1,
+    rotation: 0
+  };
   
   this.on = function(evt, callback) {
     if (_this.callbacks[evt] && typeof callback === 'function') _this.callbacks[evt].push(callback);
@@ -73,17 +76,11 @@ var LightTouch = function(elem, callback) {
   };
   
   this.handleTouch = function() {
-    // for (i = 0; i < _this.touches.length; i++) {
-    //   console.log(_this.touches[i]);
-    // }
-    
-    if (_this.touches.length > 0) {
+    if (_this.touches.length === 1) {
       for (i = 0, length = _this.callbacks.pan.length; i < length; i++) {
-        _this.callbacks.pan[i].call(_this, _this.touches[0]);
+        _this.callbacks.pan[i].call(_this, _this.multitouch, _this.touches[0]);
       }
-    } 
-    
-    if (_this.touches.length > 1) {
+    } else if (_this.touches.length > 1) {
       for (i = 0, length = _this.callbacks.pinch_zoom.length; i < length; i++) {
         _this.callbacks.pinch_zoom[i].call(_this, _this.multitouch, _this.touches.slice(0,2));
       }
@@ -111,12 +108,10 @@ var LightTouch = function(elem, callback) {
           t.calculateVelocity(evt.timeStamp);
           
           _this.touches.push(t);
+          
+          _this.multitouch.scale = evt.scale;
+          _this.multitouch.rotation = evt.rotation;
         }
-      }
-      
-      if (evt.changedTouches.length > 1) {
-        _this.multitouch.scale = evt.scale;
-        _this.multitouch.rotation = evt.rotation;
       }
     } else {
       t = new Touch();
@@ -131,6 +126,9 @@ var LightTouch = function(elem, callback) {
       
       _this.touches.push(t);
     }
+    
+    _this.multitouch.scale = evt.scale || _this.multitouch.scale;
+    _this.multitouch.rotation = evt.rotation || _this.multitouch.rotation;
     
     updateTouchLookup();
     
@@ -156,11 +154,6 @@ var LightTouch = function(elem, callback) {
         t.duration = evt.timeStamp - t.startTime;
         t.calculateVelocity(evt.timeStamp);
       }
-      
-      if (evt.touches.length > 1) {
-        _this.multitouch.scale = evt.scale;
-        _this.multitouch.rotation = evt.rotation;
-      }
     } else {
       t = lookup[0];
       t.stage = 'move';
@@ -170,6 +163,9 @@ var LightTouch = function(elem, callback) {
       t.duration = evt.timeStamp - t.startTime;
       t.calculateVelocity(evt.timeStamp);
     }
+    
+    _this.multitouch.scale = evt.scale || _this.multitouch.scale;
+    _this.multitouch.rotation = evt.rotation || _this.multitouch.rotation;
     
     _this.handleTouch();
   }
@@ -206,7 +202,9 @@ var LightTouch = function(elem, callback) {
       
     }
     
-    unbind(window, 'touchmove mousemove', moveHandler);
+    if (_this.touches.length === 0) {
+      unbind(window, 'touchmove mousemove', moveHandler);
+    }
   }
   
   bind(this.elem, 'touchstart mousedown', startHandler);
