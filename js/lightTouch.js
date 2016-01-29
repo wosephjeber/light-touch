@@ -14,33 +14,57 @@ var LightTouch = function(elem, callback) {
    
   var Touch = function() {
     var _this = this;
-    
+    // public properties
+    this.id = 1;
+    this.x = null;
+    this.y = null;
+    this.startX = null;
+    this.startY = null;
+  };
+  
+  var TouchEvent = function() {
+    var _this = this;
+        
     // variables needed for velocity calculation
     var prevDeltaX = 0;
     var prevDeltaY = 0;
+    var prevScale = 1;
+    var prevRotation = 0;
     var prevTimestamp = 0;
-    
-    // public properties
-    this.id = 1;
-    this.type = null;
+    var prevNumTouches = 0;
+        
+    this.stage = null;
     this.startX = null;
     this.startY = null;
     this.startTime = null;
+    this.startScale = 1;
+    this.startRotation = 0;
     this.deltaX = 0;
     this.deltaY = 0;
     this.duration = 0;
     this.velocityX = 0;
     this.velocityY = 0;
+    this.velocityScale = 0;
+    this.velocityRotation = 0;
+    this.touches = [];
+    this.scale = 1;
+    this.rotation = 0;
+    
+    this.anchorTouch = null;
     
     // calculates the velocity of the touch event
     this.calculateVelocity = function(timestamp) {
       var deltaTime = timestamp - prevTimestamp;
       _this.velocityX = (_this.deltaX - prevDeltaX) / deltaTime;
       _this.velocityY = (_this.deltaY - prevDeltaY) / deltaTime;
+      _this.velocityScale = (_this.scale - prevScale) / deltaTime;
+      _this.velocityRotation = (_this.rotation - prevRotation) / deltaTime;
       
       prevTimestamp = timestamp;
       prevDeltaX = _this.deltaX;
       prevDeltaY = _this.deltaY;
+      prevScale = _this.scale;
+      prevRotation = _this.rotation;
     };
   };
   
@@ -51,15 +75,12 @@ var LightTouch = function(elem, callback) {
   this.callbacks = {
     pan: [],
     pinch_zoom: [],
-    rotate: []
+    rotate: [],
+    move: []
   };
   
-  this.touches = [];
-  this.multitouch = {
-    scale: 1,
-    rotation: 0
-  };
-  
+  this.touchEvent = new TouchEvent();
+    
   this.on = function(evt, callback) {
     if (_this.callbacks[evt] && typeof callback === 'function') _this.callbacks[evt].push(callback);
   };
@@ -76,59 +97,52 @@ var LightTouch = function(elem, callback) {
   };
   
   this.handleTouch = function() {
-    if (_this.touches.length === 1) {
-      for (i = 0, length = _this.callbacks.pan.length; i < length; i++) {
-        _this.callbacks.pan[i].call(_this, _this.multitouch, _this.touches[0]);
-      }
-    } else if (_this.touches.length > 1) {
-      for (i = 0, length = _this.callbacks.pinch_zoom.length; i < length; i++) {
-        _this.callbacks.pinch_zoom[i].call(_this, _this.multitouch, _this.touches.slice(0,2));
-      }
-      for (i = 0, length = _this.callbacks.rotate.length; i < length; i++) {
-        _this.callbacks.rotate[i].call(_this, _this.multitouch, _this.touches.slice(0,2));
-      }
+    for (i = 0, length = _this.callbacks.move.length; i < length; i++) {
+      _this.callbacks.move[i].call(_this, _this.touchEvent);
     }
   };
   
   function startHandler(e) {
-    
     var evt = e.originalEvent || e;
     var t;
     
     if (evt.changedTouches) {
+      // this must be a multitouch device
+      
+      // loop through each touch
       for (i = 0, length = evt.changedTouches.length; i < length; i++) {
-        if (_this.touches.indexOf(lookup[evt.changedTouches[i].identifier]) === -1) {
+        
+        // if it's a new touch, add it to the TouchEvent
+        if (_this.touchEvent.touches.indexOf(lookup[evt.changedTouches[i].identifier]) === -1) {
           t = new Touch();
           t.id = evt.changedTouches[i].identifier;
-          t.stage = 'start';
-          t.type = evt.type;
           t.startX = evt.changedTouches[i].clientX;
           t.startY = evt.changedTouches[i].clientY;
-          t.startTime = evt.timeStamp;
-          t.calculateVelocity(evt.timeStamp);
           
-          _this.touches.push(t);
-          
-          _this.multitouch.scale = evt.scale;
-          _this.multitouch.rotation = evt.rotation;
+          _this.touchEvent.touches.push(t);
         }
       }
     } else {
-      t = new Touch();
+      // this must not be a multitouch device
       
+      t = new Touch();
       t.id = 0;
-      t.stage = 'start';
-      t.type = evt.type;
       t.startX = evt.clientX;
       t.startY = evt.clientY;
-      t.startTime = evt.timeStamp;
-      t.calculateVelocity(evt.timeStamp);
       
-      _this.touches.push(t);
+      _this.touchEvent.touches.push(t);
     }
     
-    _this.multitouch.scale = evt.scale || _this.multitouch.scale;
-    _this.multitouch.rotation = evt.rotation || _this.multitouch.rotation;
+    if (!_this.touchEvent.stage) {
+      _this.touchEvent.stage = 'start';
+      _this.touchEvent.anchorTouch = _this.touchEvent.touches[0];
+      _this.touchEvent.startX = _this.touchEvent.touches[0].startX;
+      _this.touchEvent.startY = _this.touchEvent.touches[0].startY;
+      _this.touchEvent.startTime = evt.timeStamp;
+      _this.touchEvent.scale = _this.touchEvent.startScale * (evt.scale || 1);
+      _this.touchEvent.rotation = _this.touchEvent.startRotation + (evt.rotation || 0);
+      _this.touchEvent.calculateVelocity(evt.timeStamp);
+    }
     
     updateTouchLookup();
     
@@ -141,69 +155,78 @@ var LightTouch = function(elem, callback) {
     e.preventDefault();
     
     var evt = e.originalEvent || e;
-    
     var t;
     
     if (evt.touches) {
+      // this must be a multitouch device
+      
       for (i = 0, length = evt.changedTouches.length; i < length; i++) {
         t = lookup[evt.changedTouches[i].identifier];
-        t.stage = 'move';
-        t.type = evt.type;
-        t.deltaX = evt.changedTouches[i].clientX - t.startX;
-        t.deltaY = evt.changedTouches[i].clientY - t.startY;
-        t.duration = evt.timeStamp - t.startTime;
-        t.calculateVelocity(evt.timeStamp);
+        if (t) {
+          t.x = evt.changedTouches[i].clientX;
+          t.y = evt.changedTouches[i].clientY;
+        }
       }
     } else {
+      // this must not be a multitouch device
+      
       t = lookup[0];
-      t.stage = 'move';
-      t.type = evt.type;
-      t.deltaX = evt.clientX - t.startX;
-      t.deltaY = evt.clientY - t.startY;
-      t.duration = evt.timeStamp - t.startTime;
-      t.calculateVelocity(evt.timeStamp);
+      t.x = evt.clientX;
+      t.y = evt.clientY;
     }
     
-    _this.multitouch.scale = evt.scale || _this.multitouch.scale;
-    _this.multitouch.rotation = evt.rotation || _this.multitouch.rotation;
+    _this.touchEvent.stage = 'move';
+    _this.touchEvent.deltaX =  _this.touchEvent.anchorTouch.x - _this.touchEvent.startX;
+    _this.touchEvent.deltaY = _this.touchEvent.anchorTouch.y - _this.touchEvent.startY;
+    _this.touchEvent.duration = evt.timeStamp - _this.touchEvent.startTime;
+    _this.touchEvent.calculateVelocity(evt.timeStamp);
+    
+    if (_this.touchEvent.touches.length > 1) {
+      _this.touchEvent.scale = _this.touchEvent.startScale * (evt.scale || 1);
+      _this.touchEvent.rotation = _this.touchEvent.startRotation + (evt.rotation || 0);
+    }
     
     _this.handleTouch();
   }
   
   function endHandler(e) {
-    // If no touches have been registered, don't do anything. This would be the
-    // case if the touch event started outside of the Touch element.
-    if (_this.touches.length === 0) {
-      return;
-    }
+    if (_this.touchEvent.touches.length === 0) return;
     
     var evt = e.originalEvent || e;
     var endedTouches = [];
     var t;
+    var prevAnchorX = _this.touchEvent.anchorTouch.x;
+    var prevAnchorY = _this.touchEvent.anchorTouch.y;
     
     if (evt.changedTouches) {
       for (i = 0, length = evt.changedTouches.length; i < length; i++) {
         endedTouches.push(evt.changedTouches[i].identifier);
-        t = lookup[evt.changedTouches[i].identifier];
-        t.stage = 'end';
-        t.type = evt.type;
       }
     } else {
       endedTouches.push(0);
-      t = lookup[0];
-      t.stage = 'end';
-      t.type = evt.type;
     }
-    _this.handleTouch();
+    
+    if (endedTouches.length < _this.touchEvent.touches.length) {
+      _this.touchEvent.startScale = _this.touchEvent.scale;
+      _this.touchEvent.startRotation = _this.touchEvent.rotation;
+    } else {
+      _this.touchEvent.stage = 'end';
+      _this.handleTouch();
+      
+      unbind(window, 'touchmove mousemove', moveHandler);
+      _this.touchEvent = new TouchEvent();
+    }
     
     for (i = 0, length = endedTouches.length; i < length; i++) {
-      _this.touches.splice(_this.touches.indexOf(lookup[endedTouches[i]]), 1);
+      _this.touchEvent.touches.splice(_this.touchEvent.touches.indexOf(lookup[endedTouches[i]]), 1);
       delete lookup[endedTouches[i]];
-      
     }
     
-    if (_this.touches.length === 0) {
-      unbind(window, 'touchmove mousemove', moveHandler);
+    if (_this.touchEvent.touches.length > 0) {
+      _this.touchEvent.anchorTouch = _this.touchEvent.touches[0];
+      
+      _this.touchEvent.startX += (_this.touchEvent.anchorTouch.x - prevAnchorX);
+      _this.touchEvent.startY += (_this.touchEvent.anchorTouch.y - prevAnchorY);
     }
   }
   
@@ -249,8 +272,8 @@ var LightTouch = function(elem, callback) {
   }
   
   function updateTouchLookup() {
-    for (i = 0, length = _this.touches.length; i < length; i++) {
-      lookup[_this.touches[i].id] = _this.touches[i];
+    for (i = 0, length = _this.touchEvent.touches.length; i < length; i++) {
+      lookup[_this.touchEvent.touches[i].id] = _this.touchEvent.touches[i];
     }
   }
 };
