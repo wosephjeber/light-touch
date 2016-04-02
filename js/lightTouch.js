@@ -20,6 +20,7 @@ var LightTouch = function(elem, callback) {
     this.y = null;
     this.startX = null;
     this.startY = null;
+    this.timestamp = 0;
   };
   
   var TouchEvent = function() {
@@ -30,7 +31,8 @@ var LightTouch = function(elem, callback) {
     var prevDeltaY = 0;
     var prevScale = 1;
     var prevRotation = 0;
-    var prevTimestamp = 0;
+    var prevXYTimestamp = 0;
+    var prevScaleRotationTimestamp = 0;
     var prevNumTouches = 0;
         
     this.stage = null;
@@ -53,18 +55,30 @@ var LightTouch = function(elem, callback) {
     this.anchorTouch = null;
     
     // calculates the velocity of the touch event
-    this.calculateVelocity = function(timestamp) {
-      var deltaTime = timestamp - prevTimestamp;
-      _this.velocityX = (_this.deltaX - prevDeltaX) / deltaTime;
-      _this.velocityY = (_this.deltaY - prevDeltaY) / deltaTime;
-      _this.velocityScale = (_this.scale - prevScale) / deltaTime;
-      _this.velocityRotation = (_this.rotation - prevRotation) / deltaTime;
+    this.calculateVelocityXandY = function(timestamp) {
+      var deltaTime = timestamp - prevXYTimestamp;
       
-      prevTimestamp = timestamp;
-      prevDeltaX = _this.deltaX;
-      prevDeltaY = _this.deltaY;
-      prevScale = _this.scale;
-      prevRotation = _this.rotation;
+      if (deltaTime > 0) {
+        _this.velocityX = (_this.deltaX - prevDeltaX) / deltaTime;
+        _this.velocityY = (_this.deltaY - prevDeltaY) / deltaTime;
+        
+        prevXYTimestamp = timestamp;
+        prevDeltaX = _this.deltaX;
+        prevDeltaY = _this.deltaY;
+      }
+    };
+    
+    this.calculateVelocityScaleAndRotation = function(timestamp) {
+      var deltaTime = timestamp - prevScaleRotationTimestamp;
+      
+      if (deltaTime > 0) {
+        _this.velocityScale = (_this.scale - prevScale) / deltaTime;
+        _this.velocityRotation = (_this.rotation - prevRotation) / deltaTime;
+        
+        prevScaleRotationTimestamp = timestamp;
+        prevScale = _this.scale;
+        prevRotation = _this.rotation;
+      }
     };
   };
   
@@ -118,6 +132,7 @@ var LightTouch = function(elem, callback) {
           t.id = evt.changedTouches[i].identifier;
           t.startX = evt.changedTouches[i].clientX;
           t.startY = evt.changedTouches[i].clientY;
+          t.timestamp = evt.timeStamp;
           
           _this.touchEvent.touches.push(t);
         }
@@ -129,6 +144,7 @@ var LightTouch = function(elem, callback) {
       t.id = 0;
       t.startX = evt.clientX;
       t.startY = evt.clientY;
+      t.timestamp = evt.timeStamp;
       
       _this.touchEvent.touches.push(t);
     }
@@ -141,7 +157,11 @@ var LightTouch = function(elem, callback) {
       _this.touchEvent.startTime = evt.timeStamp;
       _this.touchEvent.scale = _this.touchEvent.startScale * (evt.scale || 1);
       _this.touchEvent.rotation = _this.touchEvent.startRotation + (evt.rotation || 0);
-      _this.touchEvent.calculateVelocity(evt.timeStamp);
+      _this.touchEvent.calculateVelocityXandY(_this.touchEvent.anchorTouch.timestamp);
+      
+      if (_this.touchEvent.touches.length > 1) {
+        _this.touchEvent.calculateVelocityScaleAndRotation(evt.timeStamp);
+      }
     }
     
     updateTouchLookup();
@@ -165,6 +185,7 @@ var LightTouch = function(elem, callback) {
         if (t) {
           t.x = evt.changedTouches[i].clientX;
           t.y = evt.changedTouches[i].clientY;
+          t.timestamp = evt.timeStamp;
         }
       }
     } else {
@@ -173,17 +194,19 @@ var LightTouch = function(elem, callback) {
       t = lookup[0];
       t.x = evt.clientX;
       t.y = evt.clientY;
+      t.timestamp = evt.timeStamp;
     }
     
     _this.touchEvent.stage = 'move';
-    _this.touchEvent.deltaX =  _this.touchEvent.anchorTouch.x - _this.touchEvent.startX;
+    _this.touchEvent.deltaX = _this.touchEvent.anchorTouch.x - _this.touchEvent.startX;
     _this.touchEvent.deltaY = _this.touchEvent.anchorTouch.y - _this.touchEvent.startY;
     _this.touchEvent.duration = evt.timeStamp - _this.touchEvent.startTime;
-    _this.touchEvent.calculateVelocity(evt.timeStamp);
+    _this.touchEvent.calculateVelocityXandY(_this.touchEvent.anchorTouch.timestamp);
     
     if (_this.touchEvent.touches.length > 1) {
       _this.touchEvent.scale = _this.touchEvent.startScale * (evt.scale || 1);
       _this.touchEvent.rotation = _this.touchEvent.startRotation + (evt.rotation || 0);
+      _this.touchEvent.calculateVelocityScaleAndRotation(evt.timeStamp);
     }
     
     _this.handleTouch();
