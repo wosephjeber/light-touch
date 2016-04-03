@@ -1,6 +1,6 @@
 # LightTouch.js
 
-A lightweight JS library for handling touch events. Still a work in progress. Currently ~8kb unminified.
+A lightweight JS library for handling touch events. Dependency free, but works with jQuery if you need IE8 support. Still a work in progress. Currently just over 8kb unminified.
 
 ## Usage
 
