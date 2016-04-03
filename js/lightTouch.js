@@ -86,34 +86,10 @@ var LightTouch = function(elem, callback) {
   this.elem = jQuery && elem instanceof jQuery ? elem[0] : elem;
   this.callback = typeof callback === 'function' ? callback : noop;
   
-  this.callbacks = {
-    pan: [],
-    pinch_zoom: [],
-    rotate: [],
-    move: []
-  };
-  
   this.touchEvent = new TouchEvent();
-    
-  this.on = function(evt, callback) {
-    if (_this.callbacks[evt] && typeof callback === 'function') _this.callbacks[evt].push(callback);
-  };
-  
-  this.off = function(evt, callback) {
-    if (_this.callbacks[evt]) {
-      if (callback) {
-        var index = _this.callbacks[evt].indexOf(callback);
-        if (index !== -1) _this.callbacks[evt].splice(index, 1);
-      } else {
-        _this.callbacks[evt] = [];
-      }
-    }
-  };
   
   this.handleTouch = function() {
-    for (i = 0, length = _this.callbacks.move.length; i < length; i++) {
-      _this.callbacks.move[i].call(_this, _this.touchEvent);
-    }
+    _this.callback.call(_this, _this.touchEvent);
   };
   
   function startHandler(e) {
