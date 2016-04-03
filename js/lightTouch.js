@@ -1,8 +1,7 @@
 var LightTouch = function(elem, callback) {
-  var _this = this;
-  var noop = function() {};
-  
-  var jQuery = window.jQuery || null;
+  var _this = this,
+      noop = function() {},
+      jQuery = window.jQuery || null;
   
   // lookup object used to efficiently find touches by their ID
   var lookup = {};
@@ -14,6 +13,7 @@ var LightTouch = function(elem, callback) {
    
   var Touch = function() {
     var _this = this;
+    
     // public properties
     this.id = 1;
     this.x = null;
@@ -27,13 +27,13 @@ var LightTouch = function(elem, callback) {
     var _this = this;
         
     // variables needed for velocity calculation
-    var prevDeltaX = 0;
-    var prevDeltaY = 0;
-    var prevScale = 1;
-    var prevRotation = 0;
-    var prevXYTimestamp = 0;
-    var prevScaleRotationTimestamp = 0;
-    var prevNumTouches = 0;
+    var prevDeltaX = 0,
+        prevDeltaY = 0,
+        prevScale = 1,
+        prevRotation = 0,
+        prevXYTimestamp = 0,
+        prevScaleRotationTimestamp = 0,
+        prevNumTouches = 0;
         
     this.stage = null;
     this.startX = null;
@@ -93,14 +93,14 @@ var LightTouch = function(elem, callback) {
   };
   
   function startHandler(e) {
-    var evt = e.originalEvent || e;
-    var t;
+    var evt = e.originalEvent || e,
+        t;
     
     if (evt.changedTouches) {
       // this must be a multitouch device
       
       // loop through each touch
-      for (i = 0, length = evt.changedTouches.length; i < length; i++) {
+      for (var i = 0, length = evt.changedTouches.length; i < length; i++) {
         
         // if it's a new touch, add it to the TouchEvent
         if (_this.touchEvent.touches.indexOf(lookup[evt.changedTouches[i].identifier]) === -1) {
@@ -150,13 +150,13 @@ var LightTouch = function(elem, callback) {
   function moveHandler(e) {
     e.preventDefault();
     
-    var evt = e.originalEvent || e;
-    var t;
+    var evt = e.originalEvent || e,
+        t;
     
     if (evt.touches) {
       // this must be a multitouch device
       
-      for (i = 0, length = evt.changedTouches.length; i < length; i++) {
+      for (var i = 0, length = evt.changedTouches.length; i < length; i++) {
         t = lookup[evt.changedTouches[i].identifier];
         if (t) {
           t.x = evt.changedTouches[i].clientX;
@@ -191,14 +191,14 @@ var LightTouch = function(elem, callback) {
   function endHandler(e) {
     if (_this.touchEvent.touches.length === 0) return;
     
-    var evt = e.originalEvent || e;
-    var endedTouches = [];
-    var t;
-    var prevAnchorX = _this.touchEvent.anchorTouch.x;
-    var prevAnchorY = _this.touchEvent.anchorTouch.y;
+    var evt = e.originalEvent || e,
+        endedTouches = [],
+        t,
+        prevAnchorX = _this.touchEvent.anchorTouch.x,
+        prevAnchorY = _this.touchEvent.anchorTouch.y;
     
     if (evt.changedTouches) {
-      for (i = 0, length = evt.changedTouches.length; i < length; i++) {
+      for (var i = 0, length = evt.changedTouches.length; i < length; i++) {
         endedTouches.push(evt.changedTouches[i].identifier);
       }
     } else {
@@ -216,7 +216,7 @@ var LightTouch = function(elem, callback) {
       _this.touchEvent = new TouchEvent();
     }
     
-    for (i = 0, length = endedTouches.length; i < length; i++) {
+    for (var i = 0, length = endedTouches.length; i < length; i++) {
       _this.touchEvent.touches.splice(_this.touchEvent.touches.indexOf(lookup[endedTouches[i]]), 1);
       delete lookup[endedTouches[i]];
     }
@@ -245,7 +245,7 @@ var LightTouch = function(elem, callback) {
       jQuery(element).bind(evt, handler);
     } else {
       var events = evt.split(' ');
-      for (i = 0; events.length > i; i++) {
+      for (var i = 0, length = events.length; length > i; i++) {
         element.addEventListener(events[i], handler, false);
       }
     }
@@ -264,14 +264,14 @@ var LightTouch = function(elem, callback) {
       jQuery(element).unbind(evt, handler);
     } else {
       var events = evt.split(' ');
-      for (i = 0; events.length > i; i++) {
+      for (var i = 0, length = events.length; length > i; i++) {
         element.removeEventListener(events[i], handler, false);
       }
     }
   }
   
   function updateTouchLookup() {
-    for (i = 0, length = _this.touchEvent.touches.length; i < length; i++) {
+    for (var i = 0, length = _this.touchEvent.touches.length; i < length; i++) {
       lookup[_this.touchEvent.touches[i].id] = _this.touchEvent.touches[i];
     }
   }
