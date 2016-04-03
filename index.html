@@ -15,45 +15,243 @@
       body {
         margin: 0;
         padding: 0;
+        font-family: 'Open Sans', Helvetica, sans-serif;
+        color: #333;
       }
       
-      .touch-me {
-        background-color: #efeeea;
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
+      .log {
+        background-color: #dddcdb;
+        padding: 20px;
+        font-size: .875em;
+        margin-top: 40px;
+      }
+      
+      .log .prop {
+        font-weight: bold;
+        text-align: right;
+        padding-right: 5px;
+        width: 140px;
+      }
+      
+      .row {
+        margin-left: -10px;
+        margin-right: -10px;
+      }
+      
+      .row:before {
+        display: table;
+        content: '';
+      }
+      
+      .row:after {
+        display: table;
+        content: '';
+        clear: both;
+      }
+      
+      [class^="col-"] {
+        float: left;
+      }
+      
+      .col-6 {
         width: 100%;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      
+      @media (min-width: 30em) {
+        .col-6 {
+          width: 50%;
+        }
+      }
+      
+      .box {
+        width: 200px;
+        height: 200px;
+        background-color: #2ec97b;
+        box-shadow: 0 0 10px rgba(0,0,0,.125);
+        cursor: move;
+        position: relative;
+        left: 50%;
+        margin-left: -100px;
+        
+        line-height: 200px;
+        text-align: center;
+        color: #fff;
+        text-transform: uppercase;
+      }
+      
+      .align-center {
+        text-align: center;
+      }
+      
+      .padded {
+        padding: 30px;
+      }
+      
+      @media (min-width: 480px) {
+        .padded {
+          padding: 40px;
+        }
+      }
+      
+      .contained {
+        max-width: 40em;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      footer {
+        padding: 20px 40px;
+        background-color: #333;
+        color: #676564;
+        font-size: .875em;
+      }
+      
+      footer a {
+        color: #676564;
+        text-decoration: none;
+      }
+      
+      footer a:hover {
+        color: #dddcdb;
       }
     </style>
+    
+    <link href='https://fonts.googleapis.com/css?family=Merriweather:300|Open+Sans:400,600' rel='stylesheet' type='text/css'>
   </head>
   <body>
+    <section class="padded">
+      <div class="contained">
+        <h1 class="align-center">LightTouch.js</h1>
+        <p class="align-center">Drag, pinch &amp; zoom, and rotate the box below.</p>
+        <div class="box">Move Me</div>
+        
+        <div class="log">
+          <div class="row">
+            <div class="col-6">
+              <table>
+                <tr>
+                  <td class="prop">
+                    Velocity X:
+                  </td>
+                  <td>
+                    <span class="velocity-x">0</span>px/ms
+                  </td>
+                </tr>
+                <tr>
+                  <td class="prop">
+                    Velocity Y:
+                  </td>
+                  <td>
+                    <span class="velocity-y">0</span>px/ms
+                  </td>
+                </tr>
+                <tr>
+                  <td class="prop">
+                    Velocity Scale:
+                  </td>
+                  <td>
+                    <span class="velocity-scale">0</span>/ms
+                  </td>
+                </tr>
+                <tr>
+                  <td class="prop">
+                    Velocity Rotation:
+                  </td>
+                  <td>
+                    <span class="velocity-rotation">0</span>deg/ms
+                  </td>
+                </tr>
+                <tr>
+                  <td class="prop">
+                    Delta X:
+                  </td>
+                  <td>
+                    <span class="delta-x">0</span>px
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-6">
+              <table>
+                <tr>
+                  <td class="prop">
+                    Delta Y:
+                  </td>
+                  <td>
+                    <span class="delta-y">0</span>px
+                  </td>
+                </tr>
+                <tr>
+                  <td class="prop">
+                    Duration:
+                  </td>
+                  <td>
+                    <span class="duration">0</span>ms
+                  </td>
+                </tr>
+                <tr>
+                  <td class="prop">
+                    Stage:
+                  </td>
+                  <td>
+                    <span class="stage"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="prop">
+                    Scale:
+                  </td>
+                  <td>
+                    <span class="scale">1</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="prop">
+                    Rotation:
+                  </td>
+                  <td>
+                    <span class="rotation">0</span>deg
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="align-center">
+      &copy;2016 Joseph Weber | <a href="https://github.com/wosephjeber/light-touch">View on GitHub</a>
+    </footer>
     
-    <div class="touch-me">
-      <ul>
-        <li>Velocity X: <span class="velocity-x">0</span>px/ms</li>
-        <li>Velocity Y: <span class="velocity-y">0</span>px/ms</li>
-        <li>Delta X: <span class="delta-x">0</span>px</li>
-        <li>Delta Y: <span class="delta-y">0</span>px</li>
-        <li>Duration: <span class="duration">0</span>ms</li>
-        <li>Stage: <span class="stage"></span></li>
-        <li>Type: <span class="type"></span></li>
-      </ul>
-    </div>
-    
-    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="js/lightTouch.js"></script>
     
     <script type="text/javascript">
-      touch = new LightTouch($('.touch-me'), function(e) {
-        $('.velocity-x').html(e.velocityX);
-        $('.velocity-y').html(e.velocityY);
-        $('.delta-x').html(e.deltaX);
-        $('.delta-y').html(e.deltaY);
-        $('.duration').html(e.duration);
-        $('.stage').html(e.stage);
-        $('.type').html(e.type);
-      })
+      var initialX = 0, initialY = 0, initialScale = 1, initialRotation = 0;
+      
+      var touch = new LightTouch(document.querySelector('.box'), function(e) {
+        document.querySelector('.velocity-x').innerHTML = e.velocityX.toFixed(4);
+        document.querySelector('.velocity-y').innerHTML = e.velocityY.toFixed(4);
+        document.querySelector('.velocity-scale').innerHTML = e.velocityScale.toFixed(4);
+        document.querySelector('.velocity-rotation').innerHTML = e.velocityRotation.toFixed(4);
+        document.querySelector('.delta-x').innerHTML = e.deltaX.toFixed(0);
+        document.querySelector('.delta-y').innerHTML = e.deltaY.toFixed(0);
+        document.querySelector('.duration').innerHTML = e.duration.toFixed(0);
+        document.querySelector('.stage').innerHTML = e.stage;
+        document.querySelector('.scale').innerHTML = (initialScale * e.scale).toFixed(4);
+        document.querySelector('.rotation').innerHTML = ((initialRotation + e.rotation + 360) % 360).toFixed(4);
+        
+        if (e.stage === 'move') {
+          this.elem.style.transform = 'translate(' + (initialX + e.deltaX) + 'px, ' + (initialY + e.deltaY) + 'px) scale(' + ((e.scale || 1) * initialScale) + ')  rotate(' + (initialRotation + e.rotation) + 'deg)';
+          this.elem.style.webkitTransform = 'translate(' + (initialX + e.deltaX) + 'px, ' + (initialY + e.deltaY) + 'px) scale(' + ((e.scale || 1) * initialScale) + ')  rotate(' + (initialRotation + e.rotation) + 'deg)';
+        } else if (e.stage === 'end') {
+          initialX += e.deltaX;
+          initialY += e.deltaY;
+          initialScale = initialScale * e.scale;
+          initialRotation = (initialRotation + e.rotation + 360) % 360;
+        }
+      });
     </script>
   </body>
 </html>
