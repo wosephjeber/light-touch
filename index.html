@@ -79,6 +79,9 @@
         text-align: center;
         color: #fff;
         text-transform: uppercase;
+        
+        -webkit-transition-property: transform;
+        transition-property: transform;
       }
       
       .align-center {
@@ -231,6 +234,7 @@
       var initialX = 0, initialY = 0, initialScale = 1, initialRotation = 0;
       
       var touch = new LightTouch(document.querySelector('.box'), function(e) {
+        
         document.querySelector('.velocity-x').innerHTML = e.velocityX.toFixed(4);
         document.querySelector('.velocity-y').innerHTML = e.velocityY.toFixed(4);
         document.querySelector('.velocity-scale').innerHTML = e.velocityScale.toFixed(4);
@@ -242,14 +246,18 @@
         document.querySelector('.scale').innerHTML = (initialScale * e.scale).toFixed(4);
         document.querySelector('.rotation').innerHTML = ((initialRotation + e.rotation + 360) % 360).toFixed(4);
         
-        if (e.stage === 'move') {
-          this.elem.style.transform = 'translate(' + (initialX + e.deltaX) + 'px, ' + (initialY + e.deltaY) + 'px) scale(' + ((e.scale || 1) * initialScale) + ')  rotate(' + (initialRotation + e.rotation) + 'deg)';
-          this.elem.style.webkitTransform = 'translate(' + (initialX + e.deltaX) + 'px, ' + (initialY + e.deltaY) + 'px) scale(' + ((e.scale || 1) * initialScale) + ')  rotate(' + (initialRotation + e.rotation) + 'deg)';
+        if (e.stage === 'start') {
+          this.elem.style.transitionDuration = '0s';
+          this.elem.style.webkitTransitionDuration = '0s';
+        } else if (e.stage === 'move') {
+          this.elem.style.transform = 'translate(' + (initialX + e.deltaX) + 'px, ' + (initialY + e.deltaY) + 'px) scale(' + ((e.scale || 1) * initialScale) + ')  rotate(' + ((initialRotation + e.rotation + 360) % 360) + 'deg)';
+          this.elem.style.webkitTransform = 'translate(' + (initialX + e.deltaX) + 'px, ' + (initialY + e.deltaY) + 'px) scale(' + ((e.scale || 1) * initialScale) + ')  rotate(' + ((initialRotation + e.rotation + 360) % 360) + 'deg)';
         } else if (e.stage === 'end') {
-          initialX += e.deltaX;
-          initialY += e.deltaY;
-          initialScale = initialScale * e.scale;
-          initialRotation = (initialRotation + e.rotation + 360) % 360;
+          this.elem.style.transitionDuration = '.5s';
+          this.elem.style.webkitTransitionDuration = '.5s';
+          
+          this.elem.style.transform = 'translate(0,0) scale(1)  rotate(0deg)';
+          this.elem.style.webkitTransform = 'translate(0,0) scale(1)  rotate(0deg)';
         }
       });
     </script>
